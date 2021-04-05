@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId=require('mongodb').ObjectId;
 const cors =require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config()
@@ -15,7 +16,7 @@ app.get('/', (req, res) => {
 
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.taqt5.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
-console.log(uri)
+ 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const productCollection = client.db("fashionPark").collection("products");
@@ -25,6 +26,20 @@ client.connect(err => {
         .then(result => {
             res.send(result.insertedCount>0)
         })
+   })
+
+   app.get('/products', (req, res)=>{
+    productCollection.find({})
+    .toArray((err,items) => {
+      res.send(items)
+    })
+   })
+
+   app.get('/product/:id',(req, res)=>{
+    productCollection.find({_id:ObjectId(req.params.id)})
+    .toArray((err,items ) => {
+        res.send(items)
+    })
    })
    
 });
