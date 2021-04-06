@@ -20,6 +20,10 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@clu
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const productCollection = client.db("fashionPark").collection("products");
+  const orderCollection = client.db("fashionPark").collection("order");
+
+  //product collection pages
+
    app.post('/addProduct',(req, res) => {
        const newProduct =req.body;
         productCollection.insertOne(newProduct)
@@ -41,6 +45,23 @@ client.connect(err => {
         res.send(items)
     })
    })
+
+//order collection pages
+
+   app.post('/addOrder',(req, res) => {
+    const newOrder =req.body;
+    orderCollection.insertOne(newOrder)
+     .then(result => {
+         res.send(result.insertedCount > 0)
+     })
+})
+
+app.get('/orderReview',(req, res)=>{
+  orderCollection.find({email:req.query.email})
+  .toArray((err,items ) => {
+      res.send(items)
+  })
+ })
    
 });
 
