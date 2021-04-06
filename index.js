@@ -28,7 +28,7 @@ client.connect(err => {
        const newProduct =req.body;
         productCollection.insertOne(newProduct)
         .then(result => {
-            res.send(result.insertedCount>0)
+            res.redirect('/')
         })
    })
 
@@ -46,6 +46,13 @@ client.connect(err => {
     })
    })
 
+   app.delete('/productDelete/:id',(req, res)=>{
+    productCollection.findOneAndDelete({_id:ObjectId(req.params.id)})
+    .then(document=>{
+      res.send(document.value)
+    })
+   })
+
 //order collection pages
 
    app.post('/addOrder',(req, res) => {
@@ -59,7 +66,7 @@ client.connect(err => {
 app.get('/orderReview',(req, res)=>{
   orderCollection.find({email:req.query.email})
   .toArray((err,items ) => {
-      res.send(items)
+       res.send(items)
   })
  })
    
